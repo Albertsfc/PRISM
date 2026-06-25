@@ -53,3 +53,4 @@ def create_work_log(log: WorkLogCreate):
     conn.commit()
     conn.close()
     return {"status": "created"}
+

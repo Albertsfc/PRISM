@@ -16,3 +16,4 @@ def health_check():
 def trigger_end_of_month_orchestration():
     result = orchestrate_end_of_month()
     return result
+

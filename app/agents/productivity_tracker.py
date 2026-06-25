@@ -43,3 +43,4 @@ def calculate_roi_and_revenue():
         "global_revenue_per_employee": revenue_per_employee,
         "employees_processed": len(employees)
     }
+

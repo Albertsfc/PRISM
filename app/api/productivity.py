@@ -29,3 +29,4 @@ def get_roi_ranking():
 def trigger_productivity_tracker():
     result = calculate_roi_and_revenue()
     return result
+

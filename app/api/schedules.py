@@ -20,3 +20,4 @@ def get_schedules():
 def run_scheduling_optimizer(req: OptimizeRequest):
     result = optimize_schedule(target_date=req.target_date, required_staff=req.required_staff)
     return result
+

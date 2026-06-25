@@ -53,3 +53,4 @@ def orchestrate_end_of_month():
     # return crew.kickoff() 
     # Comentado para evitar falha se a API_KEY for invalida na demo.
     return {"status": "success", "message": "Orquestração concluída (mocked)."}
+
