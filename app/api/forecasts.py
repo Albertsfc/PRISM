@@ -15,4 +15,3 @@ def get_labor_costs():
 def generate_forecasts():
     result = forecast_labor_costs(months_ahead=12)
     return result
-
