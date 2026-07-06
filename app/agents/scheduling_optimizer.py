@@ -56,4 +56,3 @@ def optimize_schedule(target_date: str, required_staff: int):
     conn.close()
 
     return {"status": "success", "schedule": schedule_result}
-
