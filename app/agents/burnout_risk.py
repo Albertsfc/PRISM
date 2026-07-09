@@ -49,4 +49,3 @@ def analyze_burnout_risks():
     conn.close()
     
     return {"status": "success", "alerts_generated": len(alerts), "details": alerts}
-
