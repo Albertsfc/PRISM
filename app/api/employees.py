@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
+from typing import List, Dict, Any
 from app.database.db_manager import get_db_connection
-from typing import List
 
 router = APIRouter()
 
@@ -24,32 +24,38 @@ class WorkLogCreate(BaseModel):
     notes: str = ""
 
 @router.get("/")
-def get_employees():
-    conn = get_db_connection()
-    employees = conn.execute("SELECT * FROM employees WHERE is_active = 1").fetchall()
-    conn.close()
+def get_employees() -> List[Dict[str, Any]]:
+    """
+    Lista todos os funcionários ativos.
+    """
+    with get_db_connection() as conn:
+        employees = conn.execute("SELECT * FROM employees WHERE is_active = 1").fetchall()
     return [dict(e) for e in employees]
 
 @router.post("/")
-def create_employee(emp: EmployeeCreate):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO employees (name, role, department, salary_annual, hourly_rate, benefits_cost, hire_date, naics_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        (emp.name, emp.role, emp.department, emp.salary_annual, emp.hourly_rate, emp.benefits_cost, emp.hire_date, emp.naics_code)
-    )
-    conn.commit()
-    emp_id = cursor.lastrowid
-    conn.close()
+def create_employee(emp: EmployeeCreate) -> Dict[str, Any]:
+    """
+    Cria um novo funcionário e salva no banco de dados.
+    """
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO employees (name, role, department, salary_annual, hourly_rate, benefits_cost, hire_date, naics_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (emp.name, emp.role, emp.department, emp.salary_annual, emp.hourly_rate, emp.benefits_cost, emp.hire_date, emp.naics_code)
+        )
+        conn.commit()
+        emp_id = cursor.lastrowid
     return {"id": emp_id, "status": "created"}
 
 @router.post("/work-logs")
-def create_work_log(log: WorkLogCreate):
-    conn = get_db_connection()
-    conn.execute(
-        "INSERT INTO work_logs (employee_id, log_date, hours_worked, overtime_hours, tasks_completed, notes) VALUES (?, ?, ?, ?, ?, ?)",
-        (log.employee_id, log.log_date, log.hours_worked, log.overtime_hours, log.tasks_completed, log.notes)
-    )
-    conn.commit()
-    conn.close()
+def create_work_log(log: WorkLogCreate) -> Dict[str, str]:
+    """
+    Cria um novo log de trabalho para um funcionário.
+    """
+    with get_db_connection() as conn:
+        conn.execute(
+            "INSERT INTO work_logs (employee_id, log_date, hours_worked, overtime_hours, tasks_completed, notes) VALUES (?, ?, ?, ?, ?, ?)",
+            (log.employee_id, log.log_date, log.hours_worked, log.overtime_hours, log.tasks_completed, log.notes)
+        )
+        conn.commit()
     return {"status": "created"}
