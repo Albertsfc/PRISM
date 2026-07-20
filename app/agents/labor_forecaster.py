@@ -25,11 +25,16 @@ def forecast_labor_costs(months_ahead: int = 12) -> Dict[str, Any]:
                 'ds': dates,
                 'y': costs
             })
+            # Adiciona dados simulados de temperatura (variável exógena)
+            df['weather_index'] = [70.0 + (i % 6) * 5 for i in range(24)]
             
             m = Prophet(yearly_seasonality=True, weekly_seasonality=False, daily_seasonality=False)
+            m.add_regressor('weather_index')
             m.fit(df)
             
             future = m.make_future_dataframe(periods=months_ahead, freq='MS')
+            # Preenche o futuro com previsão simulada de clima (média simples)
+            future['weather_index'] = 75.0
             forecast = m.predict(future)
             
             future_forecast = forecast[forecast['ds'] > df['ds'].max()].copy()

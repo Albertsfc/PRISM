@@ -13,6 +13,13 @@ except Exception:
     model = None
     burnout_embeddings = None
 
+def trigger_contingent_worker_webhook(employee_id: int, risk_score: float):
+    """
+    Simula o envio de webhook para plataformas de trabalho temporário (gig workers) 
+    para suprir falta de pessoal se o risco for crítico.
+    """
+    print(f"WEBHOOK TRIGGERED: Solicitação de freelancer enviada para cobrir possível falta do emp_id={employee_id} (Risk: {risk_score:.2f})")
+
 def analyze_burnout_risks() -> Dict[str, Any]:
     """
     Avalia risco de burnout analisando NLP de 'notes' e horas extras na tabela 'work_logs'.
@@ -51,6 +58,9 @@ def analyze_burnout_risks() -> Dict[str, Any]:
                         (log["employee_id"], datetime.now().strftime("%Y-%m-%d"), risk_score, json.dumps(factors))
                     )
                     alerts.append({"employee_id": log["employee_id"], "score": risk_score})
+                    
+                    if risk_score > 85.0:
+                        trigger_contingent_worker_webhook(log["employee_id"], risk_score)
                     
             conn.commit()
             

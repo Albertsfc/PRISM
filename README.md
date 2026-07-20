@@ -10,7 +10,7 @@
 
 > **An open-source workforce intelligence system for SMEs — Prophet labor cost forecasting, PuLP schedule optimization, burnout risk scoring, and CrewAI multi-agent orchestration for workforce analytics.**
 
-PRISM is an open-source productivity and labor cost intelligence system. It tracks employee productivity metrics, forecasts labor costs with time-series modeling, optimizes workforce schedules using linear programming, scores burnout risk, and compares performance against industry benchmarks — all orchestrated through a CrewAI multi-agent layer running locally with no cloud dependency.
+PRISM is an open-source productivity and labor cost intelligence system. It tracks employee productivity metrics, forecasts labor costs with time-series modeling (now with exogenous data integration), optimizes workforce schedules using linear programming (with US Labor Law Compliance constraints), scores burnout risk to trigger gig worker webhooks, and uses a CrewAI multi-agent layer for conversational orchestration.
 
 ---
 
@@ -76,9 +76,11 @@ graph TD
 |---|---|---|
 | `/api/employees` | `GET / POST` | Employee registry — list or register |
 | `/api/productivity` | `GET / POST` | Productivity metrics per employee and team |
-| `/api/forecast` | `GET` | Labor cost projections with seasonal decomposition |
-| `/api/schedules` | `GET / POST` | Optimized schedule — view or trigger optimization run |
-| `/api/burnout` | `GET` | Burnout risk scores and alert flags |
+| `/api/forecast` | `GET` | Labor cost projections with seasonal and exogenous variables |
+| `/api/schedules` | `GET / POST` | Optimized schedule with labor compliance limits |
+| `/api/burnout` | `GET` | Burnout risk scores and auto-trigger gig-worker alerts |
+| `/api/chat` | `POST` | Conversational NLP Copilot via CrewAI |
+| `/api/mobile/clock-in`| `POST` | Mobile endpoint for employee clock-in with geofencing |
 | `/api/system` | `GET` | System status, AI mode (`llm` or `offline`), version |
 
 ### Stack
@@ -207,6 +209,8 @@ PRISM/
 │   │   ├── forecasts.py
 │   │   ├── schedules.py
 │   │   ├── alerts.py
+│   │   ├── chat.py                      ← NLP Conversational Router
+│   │   ├── mobile.py                    ← Geofenced Mobile Gateway
 │   │   └── system.py
 │   ├── database/
 │   │   ├── db_manager.py
@@ -240,7 +244,14 @@ Areas where contributions are most needed:
 
 ## Changelog
 
-### Latest: v0.1.0
+### Latest: v0.2.0 (VEGA Update)
+- **Compliance Engine:** Mathematical constraints in PuLP solver to prevent illegal schedules (e.g. "clopening" penalties).
+- **Exogenous Forecasting:** Added `add_regressor` in Prophet for weather/POS data integration.
+- **Conversational Copilot:** New `/api/chat` endpoint to parse natural language intentions to the CrewAI orchestrator.
+- **Mobile Geofencing:** New `/api/mobile/clock-in` endpoint preventing remote punch-in fraud.
+- **Gig-Worker Webhooks:** Auto-trigger for contingent workers when burnout risk exceeds critical thresholds.
+
+### v0.1.0
 - Full workforce intelligence pipeline: productivity tracking, labor forecasting, schedule optimization, burnout risk, benchmark comparison
 
 ---

@@ -23,6 +23,14 @@ def optimize_schedule(target_date: str, required_staff: int) -> Dict[str, Any]:
 
         prob += pulp.lpSum([employee_vars[emp["id"]] for emp in employees]) >= required_staff
 
+        # Compliance Mockup: Penalidade para violação de intervalo mínimo de descanso (ex: clopening)
+        # Como estamos simulando turnos diários únicos, adicionaremos uma variável de "violação de compliance"
+        compliance_penalty = pulp.LpVariable("compliance_penalty", lowBound=0, cat="Continuous")
+        # Simulação: assumimos que o funcionário 1 tem risco de quebrar 10h de descanso inter-turno
+        if employees and len(employees) > 0:
+            prob += compliance_penalty >= employee_vars[employees[0]["id"]] * 50.0  # Multa hipotética de $50
+            prob.objective += compliance_penalty  # Adiciona penalidade financeira à função objetivo de custos
+        
         prob.solve(pulp.PULP_CBC_CMD(msg=0))
 
         if pulp.LpStatus[prob.status] != 'Optimal':

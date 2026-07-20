@@ -4,7 +4,7 @@ from pydantic import Field
 from typing import Optional, List
 
 class Settings(BaseSettings):
-    version: str = "0.1.0"
+    version: str = "0.2.0"
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./prism_workforce.db")
     nova_database_url: str = os.getenv("NOVA_DATABASE_URL", "sqlite:///../NOVA/nova_finance.db")
     openai_api_key: Optional[str] = os.getenv("OPENAI_API_KEY")
